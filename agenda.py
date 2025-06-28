@@ -1,39 +1,47 @@
 import json
 from datetime import datetime
+import os
 
-ARQUIVO =   "eventos.json"
+ARQUIVO = os.path.join(os.getcwd(), "eventos.json")
+
+# Novo bloco de código
+print("Diretório atual:", os.getcwd())
+
+def salvar_eventos(eventos):
+    """Função para salvar os eventos em disco"""
+    with open(ARQUIVO, "w") as f:
+        json.dump(eventos, f, indent=4)
+    print(f"Arquivo {ARQUIVO} salvo com sucesso!")  # Linha de depuração
 
 def carregar_eventos():
     """Função para ler e carregar eventos armazenados em um arquivo JSON"""
     try:
         with open(ARQUIVO, "r") as f:
             return json.load(f)
-    except FileNotFoundError:
+    except (FileNotFoundError, json.decoder.JSONDecodeError):
         return []
-
-def salvar_eventos(eventos):
-    """Função para salvar os eventos em disco"""
-    with open(ARQUIVO, "w") as f:
-        json.dump(eventos, f, indent=4)
 
 def cadastrar_evento():
     """Função para cadastrar eventos"""
     nome = input('Nome do evento: ')
-    data = input('Data (YYY-MM-DD): ')
+    data = input('Data (DD/MM/AAAA): ')
     hora = input('Hora (HH:MM): ')
     tipo = input('Tipo (prova, lembrete, trabalho): ')
 
+    print(f"DEBUG: nome={nome}, data={data}, hora={hora}, tipo={tipo}")  # Linha de depuração
+
     # Validar data e hora
     try:
-        datetime.strptime(data, "%Y-%m-%d")
-        datetime.strptime(hora, "%H:%M") 
-    except ValueError:
-        print('Data ou hora inválida!')
+        data_obj = datetime.strptime(data, "%d/%m/%Y")
+        data_formatada = data_obj.strftime("%Y-%m-%d")
+        datetime.strptime(hora, "%H:%M")
+    except ValueError as e:
+        print(f'Data ou hora inválida! Erro: {e}')
         return None
 
-    return{
+    return {
         "nome": nome,
-        "data": data,
+        "data": data_formatada,
         "hora": hora,
         "tipo": tipo,
     }      
@@ -55,17 +63,18 @@ def main():
         print("\n1. Cadastrar evento.")
         print("2. Listar eventos")
         print("3. Sair")
-        escolha = input('Escolha uma opção: ')
+        escolha = input('Escolha uma opção: ').strip()
 
-        if escolha == 1:
-             evento = cadastrar_evento()
-             if evento:
-                 eventos.append(evento)
-                 salvar_eventos(eventos)
-                 print("Evento cadastrado com sucesso!")
-        elif escolha == 2:
+        if escolha == "1":
+            evento = cadastrar_evento()
+            if evento:
+                eventos.append(evento)
+                salvar_eventos(eventos)
+                print("Evento cadastrado com sucesso!")               
+        elif escolha == "2":
+            eventos = carregar_eventos()  # <-- recarrega do arquivo
             listar_eventos(eventos)
-        elif escolha == 3:
+        elif escolha == "3":
             print('Saindo...')
             break
         else:

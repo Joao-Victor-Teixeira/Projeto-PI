@@ -1,0 +1,14 @@
+[
+    {
+        "nome": "prova de algoritimos",
+        "data": "2025-07-12",
+        "hora": "19:30",
+        "tipo": "prova"
+    },
+    {
+        "nome": "prova",
+        "data": "2025-07-25",
+        "hora": "14:00",
+        "tipo": "lembrete"
+    }
+]
